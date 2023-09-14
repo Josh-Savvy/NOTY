@@ -12,11 +12,12 @@ import NoteHighlightCard from "../../components/organisms/home/NoteHighlightCard
 import ScreenLayout from "../../components/layouts/ScreenLayout";
 import { StyleSheet } from "react-native";
 import { currentTheme } from "../../../constants/theme.constant";
-import { InfoIcon, SearchIcon } from "../../components/icons";
+import { InfoIcon, PlusIcon, SearchIcon } from "../../components/icons";
+
+const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen({ navigation }: any) {
 	const theme = useColorScheme();
-	const { width, height } = Dimensions.get("window");
 
 	return (
 		<ScreenLayout>
@@ -24,10 +25,10 @@ export default function HomeScreen({ navigation }: any) {
 				<View style={styles(theme).header}>
 					<Text style={styles(theme).headerText}>Notes</Text>
 					<View style={styles(theme).headerIconsContainer}>
-						<TouchableOpacity activeOpacity={0.6} style={styles(theme).icon}>
+						<TouchableOpacity style={styles(theme).icon}>
 							<SearchIcon />
 						</TouchableOpacity>
-						<TouchableOpacity activeOpacity={0.6} style={styles(theme).icon}>
+						<TouchableOpacity style={styles(theme).icon}>
 							<InfoIcon />
 						</TouchableOpacity>
 					</View>
@@ -37,7 +38,6 @@ export default function HomeScreen({ navigation }: any) {
 						width: width * 0.8,
 						alignSelf: "center",
 						height: height * 0.6,
-						backgroundColor: "red",
 					}}
 					resizeMode="contain"
 					source={require("../../../assets/home/illustration_1.png")}
@@ -48,9 +48,16 @@ export default function HomeScreen({ navigation }: any) {
 						alignSelf: "center",
 						color: currentTheme(theme).primary,
 						fontSize: 20,
-						top: -500,
+						top: -110,
 					}}
 				/>
+				<TouchableOpacity
+					onPress={() => navigation.navigate("EditorScreen")}
+					activeOpacity={0.6}
+					style={styles(theme).addButton}
+				>
+					<PlusIcon height={30} width={30} />
+				</TouchableOpacity>
 			</View>
 			{/* <NoteHighlightCard /> */}
 		</ScreenLayout>
@@ -83,5 +90,20 @@ const styles = (theme: ColorSchemeName) =>
 			alignItems: "center",
 			alignSelf: "center",
 			borderRadius: 10,
+		},
+		addButton: {
+			borderRadius: 50,
+			padding: 20,
+			backgroundColor: "#222",
+			position: "absolute",
+			shadowColor: "#000",
+			shadowOffset: {
+				height: 5,
+				width: 5,
+			},
+			shadowOpacity: 3,
+			shadowRadius: 20,
+			bottom: height * -0.18,
+			right: 0,
 		},
 	});

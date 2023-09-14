@@ -9,6 +9,7 @@ import React from "react";
 import { RootStackParamList } from "../../interfaces/navigation";
 import linkingConfig from "../navigation/linkingConfig";
 import HomeScreen from "../screens/home";
+import EditorScreen from "../screens/editor";
 
 export default function Navigation({ colorScheme }: any) {
 	const mainColorScheme = colorScheme;
@@ -39,10 +40,16 @@ function RootNavigator() {
 	return (
 		<Stack.Navigator
 			initialRouteName="HomeScreen"
-			screenOptions={{ presentation: "card", headerShown: false }}
+			screenOptions={{ headerShown: false }}
 		>
-			<Stack.Group screenOptions={{ presentation: "card", headerShown: false }}>
+			<Stack.Group
+				screenOptions={{
+					presentation: "card",
+					headerShown: false,
+				}}
+			>
 				<Stack.Screen name="HomeScreen" component={HomeScreen} />
+				<Stack.Screen name="EditorScreen" component={EditorScreen} />
 			</Stack.Group>
 		</Stack.Navigator>
 	);
