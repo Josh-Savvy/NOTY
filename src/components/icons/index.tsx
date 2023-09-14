@@ -1,11 +1,12 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, ViewStyle, StyleProp } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
 export interface IconPropsInterface {
 	width?: string | number;
 	height?: string | number;
 	color?: string;
+	style?: ViewStyle;
 }
 
 export function SearchIcon(props: IconPropsInterface) {
@@ -122,6 +123,23 @@ export function PenIcon(props: IconPropsInterface) {
 				stroke-width="2"
 				stroke-linecap="round"
 				stroke-linejoin="round"
+			/>
+		</Svg>
+	);
+}
+export function WarningIcon(props: IconPropsInterface) {
+	const { color, height, width } = props;
+	return (
+		<Svg
+			style={{ ...props.style }}
+			width={width || "30"}
+			height={height || "30"}
+			viewBox="0 0 30 30"
+			fill="none"
+		>
+			<Path
+				d="M15.0001 0.599976C7.0513 0.599976 0.600098 7.05117 0.600098 15C0.600098 22.9488 7.0513 29.4 15.0001 29.4C22.9489 29.4 29.4001 22.9488 29.4001 15C29.4001 7.05117 22.9489 0.599976 15.0001 0.599976ZM16.4401 22.2H13.5601V13.56H16.4401V22.2ZM16.4401 10.68H13.5601V7.79997H16.4401V10.68Z"
+				fill={color || "#606060"}
 			/>
 		</Svg>
 	);
