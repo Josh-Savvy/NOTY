@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "todo",
-    "slug": "todo",
-    "scheme": "todo",
+    "name": "notes_app",
+    "slug": "notes_app",
+    "scheme": "notes_app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
