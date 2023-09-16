@@ -8,6 +8,7 @@ import {
 	TouchableOpacity,
 	Image,
 	RefreshControl,
+	ScrollView,
 } from "react-native";
 import NoteHighlightCard from "../../components/organisms/home/NoteHighlightCard";
 import ScreenLayout from "../../components/layouts/ScreenLayout";
@@ -15,7 +16,7 @@ import { StyleSheet } from "react-native";
 import { currentTheme } from "../../../constants/theme.constant";
 import { InfoIcon, PlusIcon, SearchIcon } from "../../components/icons";
 import { IEditorState } from "../../../interfaces/editor.interface";
-import { loadNotes } from "../../libs/utils";
+import { deleteNote, loadNotes } from "../../libs/utils";
 import { SwipeListView, SwipeRow } from "react-native-swipe-list-view";
 import DeleteItemButton from "../../components/organisms/home/DeleteItemButton";
 import CustomPromptModal from "../../components/common/modals";
@@ -27,31 +28,43 @@ export default function HomeScreen({ navigation }: any) {
 	const [notes, setNotes] = useState<IEditorState[]>([]);
 	const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 	const [refreshing, setRefreshing] = useState<boolean>(false);
-	const swipeListViewRef = useRef<SwipeListView<IEditorState> | null>(null);
+
+	const checkUpdate = () => {
+		console.log("Checking for updates...");
+		loadNotes({ notes, setNotes }, () => console.log("Notes updated!"));
+		setRefreshing(false);
+	};
 
 	useEffect(() => {
-		loadNotes({ notes, setNotes });
+		const timer = setInterval(checkUpdate, 5000);
+		return () => clearInterval(timer);
 	}, []);
-
-	const deleteItem = (itemId: string) => {
-		console.log("Item", itemId, "deleted!");
-		setShowConfirmModal(false);
-		if (swipeListViewRef.current) swipeListViewRef.current.closeAllOpenRows();
-		handleRefresh();
-	};
 
 	const handleRefresh = () => {
 		setRefreshing(true);
 		loadNotes({ notes, setNotes }, () =>
-			setTimeout(() => {
+			setTimeout(function () {
 				setRefreshing(false);
-			}, 2000),
+			}, 1000),
 		);
 	};
 
 	useEffect(() => {
 		if (refreshing) handleRefresh();
 	}, [refreshing]);
+
+	const deleteItem = (itemId: string) => {
+		console.log("Item", itemId, "deleted!");
+		setShowConfirmModal(false);
+		deleteNote(
+			{
+				notes,
+				setNotes,
+				item: notes.filter((note) => note.id === itemId)[0],
+			},
+			handleRefresh,
+		);
+	};
 
 	return (
 		<ScreenLayout>
@@ -70,7 +83,6 @@ export default function HomeScreen({ navigation }: any) {
 				<View style={{ minHeight: height }}>
 					{notes.length > 0 ? (
 						<SwipeListView
-							ref={swipeListViewRef}
 							data={notes}
 							showsHorizontalScrollIndicator={false}
 							showsVerticalScrollIndicator={false}
@@ -79,7 +91,8 @@ export default function HomeScreen({ navigation }: any) {
 							renderItem={({ index, item }) => {
 								return <NoteHighlightCard note={item} key={index} />;
 							}}
-							renderHiddenItem={({ index, item }, rowMap) => {
+							keyExtractor={(item) => `key_${item.id.toString()}`}
+							renderHiddenItem={({ item }) => {
 								return (
 									<>
 										<DeleteItemButton deleteItem={() => setShowConfirmModal(true)} />
@@ -88,11 +101,7 @@ export default function HomeScreen({ navigation }: any) {
 												iconColor="#d311198A"
 												isModalVisible={showConfirmModal}
 												closeModal={() => setShowConfirmModal(false)}
-												next={() => {
-													if (swipeListViewRef.current)
-														swipeListViewRef.current.closeAllOpenRows();
-													setShowConfirmModal(false);
-												}}
+												next={() => setShowConfirmModal(false)}
 												cancel={() => deleteItem(item.id)}
 												nextText="Keep"
 												cancelText="Delete"
@@ -108,12 +117,17 @@ export default function HomeScreen({ navigation }: any) {
 								<RefreshControl
 									refreshing={refreshing}
 									onRefresh={() => setRefreshing(true)}
-									tintColor="#fff"
+									tintColor="#ffffff"
 								/>
 							}
 						/>
 					) : (
-						<View>
+						<ScrollView>
+							<RefreshControl
+								refreshing={refreshing}
+								onRefresh={() => setRefreshing(true)}
+								tintColor="#ffffff"
+							/>
 							<Image
 								style={{
 									width: width * 0.8,
@@ -124,7 +138,7 @@ export default function HomeScreen({ navigation }: any) {
 								source={require("../../../assets/home/illustration_1.png")}
 							/>
 							<Text
-								children="Create your first note !"
+								children="Pull down to refresh or Create your first note!"
 								style={{
 									alignSelf: "center",
 									color: currentTheme(theme).primary,
@@ -132,7 +146,7 @@ export default function HomeScreen({ navigation }: any) {
 									top: -110,
 								}}
 							/>
-						</View>
+						</ScrollView>
 					)}
 					<TouchableOpacity
 						onPress={() => navigation.navigate("EditorScreen")}
