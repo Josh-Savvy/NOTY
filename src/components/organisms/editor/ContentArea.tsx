@@ -24,15 +24,12 @@ import { IEditorContentAreaProps } from "../../../../interfaces/editor.interface
 
 const ContentArea = forwardRef(
 	(props: IEditorContentAreaProps, ref): JSX.Element => {
+		const { update } = props;
 		const theme = useColorScheme();
-		const [content, setContent] = useState<string>("");
 		useEffect(() => {
 			Keyboard.isVisible() ? console.log(Keyboard.metrics()) : null;
 		}, [Keyboard]);
 		useImperativeHandle(ref, () => ({
-			setTitle: (updatedContent: string) => {
-				setContent(updatedContent);
-			},
 			toggleFocus: () => {
 				contentRef?.current?.isFocused()
 					? contentRef?.current?.blur()
@@ -52,8 +49,7 @@ const ContentArea = forwardRef(
 					placeholderTextColor="#9A9A9A"
 					style={styles(theme).textInput}
 					multiline
-					value={content}
-					onChangeText={(text) => setContent(text)}
+					onChangeText={(text) => update?.updateValue(text)}
 					textBreakStrategy="simple"
 					{...props}
 				/>

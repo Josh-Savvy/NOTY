@@ -1,6 +1,13 @@
 import React from "react";
-import { View, Text, Dimensions, StyleSheet } from "react-native";
+import {
+	View,
+	Text,
+	Dimensions,
+	StyleSheet,
+	TouchableOpacity,
+} from "react-native";
 import { ChevronBack } from "../icons";
+import IScreenLayout from "../../../interfaces/layout.interface";
 
 const { width, height } = Dimensions.get("window");
 
@@ -9,19 +16,24 @@ export default function ScreenLayout({
 	showBackIcon = false,
 	screenTitle,
 	rightIcon,
-}: {
-	children: React.ReactNode;
-	showBackIcon?: boolean;
-	screenTitle?: string;
-	rightIcon?: any;
-}) {
+	navigation,
+	handleGoBackNavigation,
+}: IScreenLayout) {
 	return (
 		<View style={styles.container}>
 			<View style={styles.headerContainer}>
 				{showBackIcon && (
-					<View style={styles.icon}>
+					<TouchableOpacity
+						activeOpacity={0.6}
+						onPress={
+							handleGoBackNavigation
+								? handleGoBackNavigation
+								: () => console.error("No function to handle go back")
+						}
+						style={styles.icon}
+					>
 						<ChevronBack />
-					</View>
+					</TouchableOpacity>
 				)}
 				{screenTitle && <Text>{screenTitle}</Text>}
 				{rightIcon && <View>{rightIcon}</View>}

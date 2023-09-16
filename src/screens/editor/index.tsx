@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 	View,
 	ColorSchemeName,
@@ -13,67 +13,59 @@ import ScreenLayout from "../../components/layouts/ScreenLayout";
 import { DisketteIcon, EyeIcon, PenIcon } from "../../components/icons";
 import TitleInput from "../../components/organisms/editor/TitleInput";
 import ContentArea from "../../components/organisms/editor/ContentArea";
-import { IEditorTitleInputRef } from "../../../interfaces/editor.interface";
+import {
+	IEditorState,
+	IEditorTitleInputRef,
+} from "../../../interfaces/editor.interface";
 import CustomPromptModal from "../../components/common/modals";
+import { INavigation } from "../../../interfaces/layout.interface";
+import EditorComponent from "../../components/organisms/editor/EditorComponent";
+import {
+	generateUUID,
+	loadNotes,
+	saveNote,
+	updateNote,
+} from "../../libs/utils";
 
-export default function EditorScreen() {
-	const theme = useColorScheme();
-	const [editMode, setEditMode] = useState<boolean>(false);
-	const [showModal, setShowModal] = useState<boolean>(true);
-	const titleRef = useRef<IEditorTitleInputRef>(null);
-	const handleEditMode = () => {
-		setEditMode(!editMode);
-		setTimeout(function () {
-			titleRef.current?.toggleFocus();
-		}, 100);
+export default function EditorScreen({ navigation }: any) {
+	let initialState: IEditorState = {
+		id: generateUUID(),
+		title: "",
+		content: "",
 	};
+	const [state, setState] = useState<IEditorState>(initialState);
+	const [formerState, setFormerState] = useState<IEditorState | null>(null);
+	const [savedNotes, setSavedNotes] = useState<IEditorState[]>([]);
+
+	useEffect(() => {
+		if (state.id === "") setState({ ...state, id: generateUUID() });
+		console.log("mainstate: ", state);
+	}, [state]);
+
+	useEffect(() => {
+		loadNotes({ notes: savedNotes, setNotes: setSavedNotes });
+		// return () => fetchAndSetFormerState();
+	}, []);
 
 	return (
-		<ScreenLayout
-			showBackIcon
-			rightIcon={
-				<View style={{ flexDirection: "row", gap: 10 }}>
-					<TouchableOpacity onPress={handleEditMode} style={styles.icon}>
-						{editMode ? <EyeIcon /> : <PenIcon color="#fff" />}
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => setShowModal(!showModal)}
-						style={styles.icon}
-					>
-						<DisketteIcon />
-					</TouchableOpacity>
-				</View>
-			}
-		>
-			<KeyboardAvoidingView
-				behavior={"padding"}
-				style={{ height: "100%", gap: 10 }}
-			>
-				<TitleInput ref={titleRef} editable={editMode} />
-				<ContentArea editable={editMode} />
-			</KeyboardAvoidingView>
-			{showModal ? (
-				<CustomPromptModal
-					isModalVisible={showModal}
-					setModalVisible={setShowModal}
-					promptText="Save Changes ?"
-				/>
-			) : null}
-		</ScreenLayout>
+		<EditorComponent
+			updateState={setState}
+			state={state}
+			navigation={navigation}
+			formerState={formerState ? formerState : null}
+			handleSave={() => {
+				const existingNote = savedNotes.find((note) =>
+					note.title.includes(state.title),
+				);
+				if (state.content || state.title)
+					if (existingNote)
+						updateNote({
+							item: existingNote,
+							notes: savedNotes,
+							setNotes: setSavedNotes,
+						});
+				saveNote({ item: state, notes: savedNotes, setNotes: setSavedNotes });
+			}}
+		/>
 	);
 }
-const styles = StyleSheet.create({
-	rightIconsContainer: {
-		flexDirection: "row",
-		alignContent: "center",
-		justifyContent: "space-between",
-	},
-	icon: {
-		backgroundColor: "#3B3B3B",
-		padding: 15,
-		alignContent: "center",
-		alignItems: "center",
-		alignSelf: "center",
-		borderRadius: 10,
-	},
-});

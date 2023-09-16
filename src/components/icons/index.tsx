@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, ViewStyle, StyleProp } from "react-native";
-import { Path, Svg } from "react-native-svg";
+import { ViewStyle } from "react-native";
+import { Path, Svg, SvgProps } from "react-native-svg";
 
-export interface IconPropsInterface {
+export interface IconPropsInterface extends SvgProps {
 	width?: string | number;
 	height?: string | number;
 	color?: string;
@@ -18,6 +18,7 @@ export function SearchIcon(props: IconPropsInterface) {
 			height={height || "20"}
 			viewBox="0 0 18 18"
 			fill="none"
+			{...props}
 		>
 			<Path
 				d="M12.5 11H11.71L11.43 10.73C12.63 9.33001 13.25 7.42001 12.91 5.39001C12.44 2.61002 10.12 0.390015 7.32002 0.0500152C3.09002 -0.469985 -0.469985 3.09001 0.0500152 7.32001C0.390015 10.12 2.61002 12.44 5.39002 12.91C7.42002 13.25 9.33002 12.63 10.73 11.43L11 11.71V12.5L15.25 16.75C15.66 17.16 16.33 17.16 16.74 16.75C17.15 16.34 17.15 15.67 16.74 15.26L12.5 11ZM6.50002 11C4.01002 11 2.00002 8.99001 2.00002 6.50001C2.00002 4.01001 4.01002 2.00002 6.50002 2.00002C8.99002 2.00002 11 4.01001 11 6.50001C11 8.99001 8.99002 11 6.50002 11Z"
@@ -64,6 +65,7 @@ export function ChevronBack(props: IconPropsInterface) {
 	const { color, height, width } = props;
 	return (
 		<Svg
+			{...props}
 			width={width || "20"}
 			height={height || "20"}
 			viewBox="0 0 15 24"
@@ -140,6 +142,23 @@ export function WarningIcon(props: IconPropsInterface) {
 			<Path
 				d="M15.0001 0.599976C7.0513 0.599976 0.600098 7.05117 0.600098 15C0.600098 22.9488 7.0513 29.4 15.0001 29.4C22.9489 29.4 29.4001 22.9488 29.4001 15C29.4001 7.05117 22.9489 0.599976 15.0001 0.599976ZM16.4401 22.2H13.5601V13.56H16.4401V22.2ZM16.4401 10.68H13.5601V7.79997H16.4401V10.68Z"
 				fill={color || "#606060"}
+			/>
+		</Svg>
+	);
+}
+export function DeleteIcon(props: IconPropsInterface) {
+	const { color, height, width } = props;
+	return (
+		<Svg
+			style={{ ...props.style }}
+			width={width || "30"}
+			height={height || "30"}
+			viewBox="0 0 28 36"
+			fill="none"
+		>
+			<Path
+				d="M2 32.8085C2 35.0553 3.8 36.8936 6 36.8936H22C24.2 36.8936 26 35.0553 26 32.8085V8.2979H2V32.8085ZM28 2.17024H21L19 0.127686H9L7 2.17024H0V6.25535H28V2.17024Z"
+				fill={color || "#fff"}
 			/>
 		</Svg>
 	);

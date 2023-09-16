@@ -11,26 +11,35 @@ import { ICustomModalProps } from "../../../../interfaces/modal.interface";
 import { WarningIcon } from "../../icons";
 
 export default function CustomPromptModal(props: ICustomModalProps) {
-	const { isModalVisible, setModalVisible } = props;
-	const toggleModal = () => {
-		setModalVisible(!isModalVisible);
-	};
+	const {
+		isModalVisible,
+		closeModal,
+		cancel,
+		next,
+		promptText,
+		promptTextSize,
+	} = props;
 
 	return (
-		<TouchableOpacity
-			activeOpacity={0}
-			onPress={() => setModalVisible(false)}
-			style={styles.container}
-		>
+		<View style={styles.container}>
 			<Modal
 				transparent={true}
 				visible={isModalVisible}
 				animationType="fade"
-				onRequestClose={toggleModal}
+				onRequestClose={closeModal}
 			>
-				<View style={styles.modalBackground}>
+				<TouchableOpacity
+					activeOpacity={0}
+					onPress={closeModal}
+					style={styles.modalBackground}
+				>
 					<View style={styles.modalContentContainer}>
-						<WarningIcon style={{ alignSelf: "center" }} height={40} width={40} />
+						<WarningIcon
+							color={props.iconColor}
+							style={{ alignSelf: "center" }}
+							height={40}
+							width={40}
+						/>
 						<Text
 							style={[styles.modalContent, { fontSize: props.promptTextSize || 20 }]}
 						>
@@ -39,21 +48,27 @@ export default function CustomPromptModal(props: ICustomModalProps) {
 						<View style={styles.modalButtonsContainer}>
 							<TouchableOpacity
 								style={[styles.modalButtons, { backgroundColor: "#d31119" }]}
-								onPress={toggleModal}
+								onPress={cancel}
 							>
-								<Text style={styles.modalButtonsText}>Discard</Text>
+								<Text
+									style={styles.modalButtonsText}
+									children={props.cancelText || "Discard"}
+								/>
 							</TouchableOpacity>
 							<TouchableOpacity
 								style={[styles.modalButtons, { backgroundColor: "#30BE71" }]}
-								onPress={toggleModal}
+								onPress={next}
 							>
-								<Text style={styles.modalButtonsText}>Save</Text>
+								<Text
+									style={styles.modalButtonsText}
+									children={props.nextText || "Save"}
+								/>
 							</TouchableOpacity>
 						</View>
 					</View>
-				</View>
+				</TouchableOpacity>
 			</Modal>
-		</TouchableOpacity>
+		</View>
 	);
 }
 
@@ -103,6 +118,7 @@ const styles = StyleSheet.create({
 	},
 	modalButtonsText: {
 		color: "#fff",
-		fontSize: 16,
+		fontSize: 17.5,
+		fontWeight: "700",
 	},
 });

@@ -39,7 +39,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
 	return (
 		<Stack.Navigator
-			initialRouteName="EditorScreen"
+			initialRouteName="HomeScreen"
 			screenOptions={{ headerShown: false }}
 		>
 			<Stack.Group

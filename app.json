@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "notes_app",
-    "slug": "notes_app",
+    "name": "Notes App",
+    "slug": "notes-app",
     "scheme": "notes_app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -26,6 +26,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b9b6470d-d13b-45dd-8d27-37a87e703082"
+      }
+    },
+    "owner": "codepriest"
   }
 }
