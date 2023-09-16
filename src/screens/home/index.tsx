@@ -9,6 +9,7 @@ import {
 	Image,
 	RefreshControl,
 	ScrollView,
+	ActivityIndicator,
 } from "react-native";
 import NoteHighlightCard from "../../components/organisms/home/NoteHighlightCard";
 import ScreenLayout from "../../components/layouts/ScreenLayout";
@@ -28,21 +29,35 @@ export default function HomeScreen({ navigation }: any) {
 	const [notes, setNotes] = useState<IEditorState[]>([]);
 	const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 	const [refreshing, setRefreshing] = useState<boolean>(false);
+	const [initialLoading, setInitialLoading] = useState<boolean>(true);
+
+	useEffect(() => {
+		loadNotes((result) => {
+			setNotes(result);
+			// console.log("Notes loaded initially");
+			setTimeout(function () {
+				setInitialLoading(false);
+			}, 2000);
+		});
+	}, []);
 
 	const checkUpdate = () => {
-		console.log("Checking for updates...");
-		loadNotes({ notes, setNotes }, () => console.log("Notes updated!"));
+		// console.log("Checking for updates...");
+		loadNotes((result) => {
+			setNotes(result);
+			// console.log("Notes updated!");
+		});
 		setRefreshing(false);
 	};
 
 	useEffect(() => {
-		const timer = setInterval(checkUpdate, 5000);
+		const timer = setInterval(checkUpdate, 1000);
 		return () => clearInterval(timer);
 	}, []);
 
 	const handleRefresh = () => {
 		setRefreshing(true);
-		loadNotes({ notes, setNotes }, () =>
+		loadNotes(() =>
 			setTimeout(function () {
 				setRefreshing(false);
 			}, 1000),
@@ -58,8 +73,6 @@ export default function HomeScreen({ navigation }: any) {
 		setShowConfirmModal(false);
 		deleteNote(
 			{
-				notes,
-				setNotes,
 				item: notes.filter((note) => note.id === itemId)[0],
 			},
 			handleRefresh,
@@ -67,12 +80,17 @@ export default function HomeScreen({ navigation }: any) {
 	};
 
 	return (
-		<ScreenLayout>
+		<ScreenLayout navigation={navigation}>
 			<View>
 				<View style={styles(theme).header}>
-					<Text style={styles(theme).headerText}>Notes</Text>
+					<Text style={styles(theme).headerText}>Noty</Text>
 					<View style={styles(theme).headerIconsContainer}>
-						<TouchableOpacity style={styles(theme).icon}>
+						<TouchableOpacity
+							style={styles(theme).icon}
+							onPress={() =>
+								navigation.navigate("SearchScreen", { presentation: "modal" })
+							}
+						>
 							<SearchIcon />
 						</TouchableOpacity>
 						<TouchableOpacity style={styles(theme).icon}>
@@ -81,7 +99,9 @@ export default function HomeScreen({ navigation }: any) {
 					</View>
 				</View>
 				<View style={{ minHeight: height }}>
-					{notes.length > 0 ? (
+					{initialLoading ? (
+						<ActivityIndicator style={{ top: 20 }} size={100} color={"#fff"} />
+					) : notes.length > 0 ? (
 						<SwipeListView
 							data={notes}
 							showsHorizontalScrollIndicator={false}
@@ -89,7 +109,15 @@ export default function HomeScreen({ navigation }: any) {
 							scrollEnabled
 							contentContainerStyle={{ gap: 25, marginTop: 40 }}
 							renderItem={({ index, item }) => {
-								return <NoteHighlightCard note={item} key={index} />;
+								return (
+									<NoteHighlightCard
+										onPress={() =>
+											navigation.navigate("EditorScreen", { noteId: item.id })
+										}
+										note={item}
+										key={index}
+									/>
+								);
 							}}
 							keyExtractor={(item) => `key_${item.id.toString()}`}
 							renderHiddenItem={({ item }) => {
@@ -173,6 +201,7 @@ const styles = (theme: ColorSchemeName) =>
 		headerText: {
 			color: currentTheme(theme).primary,
 			fontSize: 40,
+			fontVariant: ["small-caps"],
 		},
 		headerIconsContainer: {
 			flexDirection: "row",

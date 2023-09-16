@@ -11,7 +11,7 @@ const EditorRightIcon = (props: {
 	setShowModal: Dispatch<SetStateAction<ModalPrompt>> | null;
 	showModal: ModalPrompt;
 	styles: any;
-	stateHasChanged: boolean;
+	stateHasNotChanged: boolean;
 }) => {
 	const {
 		handleEditMode,
@@ -19,7 +19,7 @@ const EditorRightIcon = (props: {
 		editMode,
 		setShowModal,
 		styles,
-		stateHasChanged,
+		stateHasNotChanged,
 	} = props;
 
 	return (
@@ -61,7 +61,7 @@ const EditorRightIcon = (props: {
 				{editMode ? <EyeIcon /> : <PenIcon color="#fff" />}
 			</TouchableOpacity>
 			<TouchableOpacity
-				// disabled={stateHasChanged}
+				disabled={stateHasNotChanged}
 				onPress={setShowModal ? () => setShowModal("save") : () => {}}
 				style={styles.icon}
 			>

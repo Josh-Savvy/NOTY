@@ -24,61 +24,12 @@ export function generateRandomHexColor(): string {
 
 var notesDataKey: string = "notes";
 
-export const saveNote = (props: {
-	notes: IEditorState[];
-	item: IEditorState;
-	setNotes: Dispatch<SetStateAction<IEditorState[]>>;
-}) => {
-	const { notes, setNotes, item } = props;
-	const newNotes: IEditorState[] = [...notes, item];
-	AsyncStorage.setItem(notesDataKey, JSON.stringify(newNotes))
-		.then(() => {
-			console.log(`Note ${item.id} has been saved`);
-			setNotes(newNotes);
-			// setState(initialState);
-		})
-		.catch((err) => {
-			console.error("Error saving note: ", err);
-		});
-};
-
-export const updateNote = (
-	props: {
-		notes: IEditorState[];
-		item: IEditorState;
-		setNotes: Dispatch<SetStateAction<IEditorState[]>>;
-	},
-	next?: () => void,
-) => {
-	const { notes, setNotes, item } = props;
-	const updatedNotes = notes.map((note) => (note.id === item.id ? item : note));
-	AsyncStorage.setItem(notesDataKey, JSON.stringify(updatedNotes))
-		.then(() => {
-			setNotes(updatedNotes);
-			console.log(`Note ${item.id} has been updated`);
-			// setState(initialState);
-			next ? next() : null;
-		})
-		.catch((err) => {
-			console.error("Error updating note: ", err);
-		});
-};
-
-export const loadNotes = (
-	props: {
-		notes: IEditorState[];
-		setNotes: Dispatch<SetStateAction<IEditorState[]>>;
-	},
-	next?: () => void,
-) => {
-	const { notes, setNotes } = props;
+export const loadNotes = (callback: (notes: IEditorState[]) => void): void => {
 	AsyncStorage.getItem(notesDataKey)
 		.then((savedNotes) => {
 			if (savedNotes) {
 				const parsedNotes: IEditorState[] = JSON.parse(savedNotes);
-				setNotes(parsedNotes);
-				next ? next() : null;
-				// console.log("savedNotes: ", parsedNotes);
+				callback(parsedNotes);
 			}
 		})
 		.catch((err) => {
@@ -86,24 +37,86 @@ export const loadNotes = (
 		});
 };
 
+export const saveNote = (
+	props: { item: IEditorState },
+	callback?: (item: IEditorState) => void,
+): void => {
+	const { item } = props;
+	loadNotes((notes) => {
+		const newNotes: IEditorState[] = [...notes, item];
+		AsyncStorage.setItem(notesDataKey, JSON.stringify(newNotes))
+			.then(() => {
+				console.log(`Note ${item.id} has been saved`);
+				callback ? callback(item) : null;
+			})
+			.catch((err) => {
+				console.error("Error saving note: ", err);
+			});
+	});
+};
+
+export const updateNote = (
+	props: {
+		item: IEditorState;
+	},
+	callback?: (updatedNotes: IEditorState[]) => void,
+): void => {
+	const { item } = props;
+	loadNotes((notes) => {
+		const updatedNotes = notes.map((note) => (note.id === item.id ? item : note));
+		AsyncStorage.setItem(notesDataKey, JSON.stringify(updatedNotes))
+			.then(() => {
+				console.log(`Note ${item.id} has been updated`);
+				callback ? callback(updatedNotes) : null;
+			})
+			.catch((err) => {
+				console.error("Error updating note: ", err);
+			});
+	});
+};
+
 export const deleteNote = (
 	props: {
-		notes: IEditorState[];
 		item: IEditorState;
-		setNotes: Dispatch<SetStateAction<IEditorState[]>>;
 	},
-	next?: () => void,
-) => {
-	const { notes, setNotes, item } = props;
-	const updatedNotes = notes.filter((note) => note.id !== item.id);
-	AsyncStorage.setItem(notesDataKey, JSON.stringify(updatedNotes))
-		.then(() => {
-			setNotes(updatedNotes);
-			console.log(`Note ${item.id} has been deleted`);
-			// setState(initialState);
-			next ? next() : null;
-		})
-		.catch((err) => {
-			console.error("Error deleting note: ", err);
-		});
+	callback?: (updatedNotes: IEditorState[]) => void,
+): void => {
+	const { item } = props;
+	loadNotes((notes) => {
+		const updatedNotes = notes.filter((note) => note.id !== item.id);
+		AsyncStorage.setItem(notesDataKey, JSON.stringify(updatedNotes))
+			.then(() => {
+				console.log(`Note ${item.id} has been updated`);
+				callback ? callback(updatedNotes) : null;
+			})
+			.catch((err) => {
+				console.error("Error updating note: ", err);
+			});
+	});
+};
+
+export const filterNotesBySearch = (
+	props: {
+		notes: IEditorState[];
+		searchQuery: string;
+	},
+	callback?: (result: IEditorState[]) => void,
+): void | null => {
+	const { notes, searchQuery } = props;
+	if (!searchQuery) {
+		return null;
+	}
+	const normalizedSearchQuery = searchQuery.toLowerCase().trim();
+	callback
+		? callback(
+				notes.filter((note: IEditorState) => {
+					const normalizedTitle = note.title.trim().toLowerCase();
+					const normalizedContent = note.content.trim().toLowerCase();
+					return (
+						normalizedTitle.includes(normalizedSearchQuery) ||
+						normalizedContent.includes(normalizedSearchQuery)
+					);
+				}),
+		  )
+		: null;
 };

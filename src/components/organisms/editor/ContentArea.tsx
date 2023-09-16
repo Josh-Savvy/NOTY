@@ -26,9 +26,7 @@ const ContentArea = forwardRef(
 	(props: IEditorContentAreaProps, ref): JSX.Element => {
 		const { update } = props;
 		const theme = useColorScheme();
-		useEffect(() => {
-			Keyboard.isVisible() ? console.log(Keyboard.metrics()) : null;
-		}, [Keyboard]);
+
 		useImperativeHandle(ref, () => ({
 			toggleFocus: () => {
 				contentRef?.current?.isFocused()

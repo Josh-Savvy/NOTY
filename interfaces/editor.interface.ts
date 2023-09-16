@@ -32,6 +32,5 @@ export interface IEditorComponent {
 	navigation: INavigation;
 	state: IEditorState;
 	updateState: Dispatch<SetStateAction<IEditorState>>;
-	formerState: IEditorState | null;
 	handleSave: () => void;
 }

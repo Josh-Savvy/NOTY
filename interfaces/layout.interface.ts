@@ -1,3 +1,4 @@
+import { ViewStyle } from "react-native";
 import { RootStackParamList } from "./navigation";
 
 export default interface IScreenLayout {
@@ -5,10 +6,11 @@ export default interface IScreenLayout {
 	showBackIcon?: boolean;
 	screenTitle?: string;
 	rightIcon?: any;
-	navigation?: INavigation;
+	navigation: any;
 	handleGoBackNavigation?: () => void;
+	childrenStyles?: ViewStyle;
 }
 export interface INavigation {
 	navigate: (screen: keyof RootStackParamList) => void;
-	back: () => void;
+	goBack: () => void;
 }

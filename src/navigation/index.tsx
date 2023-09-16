@@ -10,6 +10,7 @@ import { RootStackParamList } from "../../interfaces/navigation";
 import linkingConfig from "../navigation/linkingConfig";
 import HomeScreen from "../screens/home";
 import EditorScreen from "../screens/editor";
+import SearchScreen from "../screens/search";
 
 export default function Navigation({ colorScheme }: any) {
 	const mainColorScheme = colorScheme;
@@ -50,6 +51,12 @@ function RootNavigator() {
 			>
 				<Stack.Screen name="HomeScreen" component={HomeScreen} />
 				<Stack.Screen name="EditorScreen" component={EditorScreen} />
+				{/* <Stack.Screen name="SearchScreen" component={SearchScreen} /> */}
+				<Stack.Screen
+					name="SearchScreen"
+					component={SearchScreen}
+					// options={{ presentation: "modal" }}
+				/>
 			</Stack.Group>
 		</Stack.Navigator>
 	);

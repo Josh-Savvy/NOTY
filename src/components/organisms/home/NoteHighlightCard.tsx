@@ -3,7 +3,13 @@ import { Text, TouchableOpacity } from "react-native";
 import { IEditorState } from "../../../../interfaces/editor.interface";
 import { generateRandomHexColor } from "../../../libs/utils";
 
-export default function NoteHighlightCard({ note }: { note: IEditorState }) {
+export default function NoteHighlightCard({
+	note,
+	onPress,
+}: {
+	note: IEditorState;
+	onPress: any;
+}) {
 	const [backgroundColor, setBackgroundColor] = useState(
 		generateRandomHexColor(),
 	);
@@ -11,7 +17,7 @@ export default function NoteHighlightCard({ note }: { note: IEditorState }) {
 	return (
 		<TouchableOpacity
 			activeOpacity={1}
-			// onPress={() => console.log("helloƒ")}
+			onPress={onPress}
 			style={{
 				padding: 20,
 				backgroundColor,

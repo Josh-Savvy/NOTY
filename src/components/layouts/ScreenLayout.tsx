@@ -18,6 +18,7 @@ export default function ScreenLayout({
 	rightIcon,
 	navigation,
 	handleGoBackNavigation,
+	childrenStyles,
 }: IScreenLayout) {
 	return (
 		<View style={styles.container}>
@@ -38,7 +39,7 @@ export default function ScreenLayout({
 				{screenTitle && <Text>{screenTitle}</Text>}
 				{rightIcon && <View>{rightIcon}</View>}
 			</View>
-			<View>{children}</View>
+			<View style={[childrenStyles]}>{children}</View>
 		</View>
 	);
 }

@@ -1,26 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-	View,
-	Text,
-	KeyboardAvoidingView,
-	TouchableOpacity,
-	StyleSheet,
-	Keyboard,
-} from "react-native";
+import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import {
 	IEditorComponent,
 	IEditorTitleInputRef,
 } from "../../../../interfaces/editor.interface";
-import navigation from "../../../navigation";
 import CustomPromptModal from "../../common/modals";
-import { EyeIcon, PenIcon, DisketteIcon } from "../../icons";
 import ScreenLayout from "../../layouts/ScreenLayout";
 import ContentArea from "./ContentArea";
 import TitleInput from "./TitleInput";
-import { INavigation } from "../../../../interfaces/layout.interface";
 import EditorRightIcon from "./EditorRightIcon";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { saveNote } from "../../../libs/utils";
 
 export type ModalPrompt = "save" | "discard" | "delete" | false;
 
@@ -28,14 +16,12 @@ export default function EditorComponent({
 	navigation,
 	state,
 	updateState,
-	formerState,
 	handleSave,
 }: IEditorComponent) {
 	const [editMode, setEditMode] = useState<boolean>(false);
 	const [showModal, setShowModal] = useState<ModalPrompt>(false);
 	const [showEditHelp, setShowEditHelp] = useState<boolean>(false);
 	const titleRef = useRef<IEditorTitleInputRef>(null);
-	const { content, title, id } = state;
 
 	const handleEditMode = () => {
 		setEditMode(!editMode);
@@ -52,29 +38,20 @@ export default function EditorComponent({
 			}, 1000);
 	}, [showEditHelp]);
 
-	// const handleSave = () => {
-	// 	AsyncStorage.setItem("formerStateData", JSON.stringify(state))
-	// 		.then(() => {
-	// 			console.log("formerStateData has been saved updated");
-	// 			setEditMode(false);
-	// 			setShowModal(false);
-	// 		})
-	// 		.catch((err) => console.error("Error saving this note: ", err));
-	// };
-
 	return (
 		<ScreenLayout
+			navigation={navigation}
 			handleGoBackNavigation={() => {
-				navigation.back();
+				navigation.goBack();
 			}}
 			showBackIcon
 			rightIcon={
 				<EditorRightIcon
-					stateHasChanged={state !== formerState}
+					stateHasNotChanged={state === null || !state}
 					styles={styles}
 					editMode={editMode}
 					handleEditMode={handleEditMode}
-					setShowModal={state.title||state.content?setShowModal:null}
+					setShowModal={state.title || state.content ? setShowModal : null}
 					showEditHelp={showEditHelp}
 					showModal={showModal}
 				/>
@@ -134,7 +111,7 @@ export default function EditorComponent({
 						setShowModal(false);
 					}}
 					cancel={() => {
-						console.log("Cancelled");
+						setShowModal(false);
 					}}
 				/>
 			) : null}
